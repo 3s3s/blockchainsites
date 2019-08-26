@@ -2,15 +2,18 @@
   "name": "BlockSites",
   "version": "0.1.0",
   "description": "Blockchain sites",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/3s3s/blockchainsites.git"
   },
-  "dependencies": {
-    "bitcoinjs-lib": "latest",
-    "cors": "latest",
-    "ejs": "latest",
-    "express": "latest",
-    "jquery": "latest",
+  "devDependencies": {
+    "bitcoinjs-lib": "^5.1.4",
+    "bootstrap": "^4.3.1",
+    "electron": "^6.0.4",
+    "jquery": "^3.4.1"
   }
 }
