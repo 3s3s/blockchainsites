@@ -391,33 +391,33 @@ async function SaveChunkToBlockchain(buffer, keyPair, newAddress, network = "tBT
 
   if (network == 'tBTC')
     constants.tx.FEE_FOR_BYTE = 5;
-        
+
   const minFee = constants.tx.EMPTY_TX_SIZE*constants.tx.FEE_FOR_BYTE;
   const fee = (buffer.length + constants.tx.EMPTY_TX_SIZE) * constants.tx.FEE_FOR_BYTE;
   const balance = await exports.getbalance();
-      
+
   //check user balance
   if (!balance || balance.error || balance.result*1 < (fee*1+2*minFee)/1E8)
     return {result: false, message: 'Insufficient funds!'};
-      
-  //Send first transactions on random address  
+
+  //Send first transactions on random address
   const sendto1 = ((fee/outArr.length+2*minFee)/1E8).toFixed(7)*1;
   const first = await GetFirstTransactions(sendto1, keyPair, outArr, network);
-      
+
   if (first.result == false)
     return {result: false, message: first.message};
-        
+
   assert(outArr.length == first.transactions.length);
 
   const inputs = await AddInputs(sendto1, first, network);
-      
+
   if (inputs.result == false)
     return {result: false, message: inputs.message};
-      
+
   inputs.txb.addOutput(newAddress.result, fee*1+minFee);
-      
+
   const tx = inputs.txb.buildIncomplete();
-      
+
   const redeemScript = first.script.redeem.output;
   for (let i=0; i<first.transactions.length; i++)
   {
@@ -425,12 +425,12 @@ async function SaveChunkToBlockchain(buffer, keyPair, newAddress, network = "tBT
     const signatureHash = networks[network].segwit ?
       tx.hashForWitnessV0(i, redeemScript, (sendto1*1E8).toFixed(0)*1, bitcoin.Transaction.SIGHASH_ALL) :
       tx.hashForSignature(i, redeemScript, bitcoin.Transaction.SIGHASH_ALL);
-          
+
     const signature = bitcoin.script.signature.encode(keyPair.sign(signatureHash), bitcoin.Transaction.SIGHASH_ALL);
-        
+
     //Splitting small chunk to the script data chunks (MAX_DATA_SIZE)
     const data = chunks(outArr[i], constants.tx.MAX_DATA_SIZE);
-        
+
     networks[network].segwit ?
       tx.setWitness(i, [
         signature,
@@ -447,34 +447,34 @@ async function SaveChunkToBlockchain(buffer, keyPair, newAddress, network = "tBT
   }
 
   const ret = await exports.broadcast(tx.toHex());
-      
-  if (ret.error) 
+
+  if (ret.error)
     return {result: false, message: ret.error.message};
-        
+
   return {result: true, txid: ret.result};
-  
+
 }
 
 exports.SaveBufferToBlockchain = function(buffer, network = "tBTC")
 {
   return new Promise(ok => {
-    zlib.deflate(buffer, async (err, deflated_buffer) => 
+    zlib.deflate(buffer, async (err, deflated_buffer) =>
     {
       //splitting binary data to big chunks MAX_TRANSACTION_SIZE
       const bigChunks = chunks(deflated_buffer, constants.tx.MAX_TRANSACTION_SIZE);
-      
+
       //create first address pair
       const keyPair = bitcoin.ECPair.makeRandom({network: networks[network].NETWORK });
-      
+
       const ret = await exports.importprivkey(keyPair.toWIF(), network);
       if (ret.error)
         return ok({result: false, message: 'importprivkey RPC error!'});
-      
+
       //Get second address
       const newAddress = networks[network].segwit ?
         await exports.getnewaddress("bech32", "bech32", network) :
         await exports.getnewaddress("legacy", "legacy", network) ;
-            
+
       if (!newAddress || newAddress.error)
         return ok({result: false, message: 'getnewaddress RPC error!'});
 
@@ -485,22 +485,22 @@ exports.SaveBufferToBlockchain = function(buffer, network = "tBTC")
         const ret = await SaveChunkToBlockchain(bigChunks[i], keyPair, newAddress, network);
         if (!ret.result || !ret.txid)
           return ok(ret);
-          
+
         txsArray.push(ret.txid);
       }
-      
+
       if (txsArray.length == 0)
         return ok({result: false, message: "unknown error!"});
-        
+
       if (txsArray.length == 1)
         return ok({result: true, txid: txsArray[0]});
-      
+
       //Save transactions as data to blockchain
-      const dataString = JSON.stringify(txsArray);  
+      const dataString = JSON.stringify(txsArray);
       const strJSON = JSON.stringify({type: 'txs', base64: Buffer.from(dataString).toString('base64')});
-      
+
       return ok(await exports.SaveBufferToBlockchain(Buffer.from(strJSON)));
-    });    
+    });
   });
 }
 
@@ -516,14 +516,14 @@ function GetDataFromTXID(txid, network = "tBTC")
     const txData = await exports.getrawtransaction(txid, network);
     if (!txData || txData.error)
       return ok({type: 'error', data: txData});
-    
-    let fullData = "";  
+
+    let fullData = "";
     for (let i=0; i<txData.result.vin.length; i++)
     {
         fullData += txData.result.vin[i].txinwitness[1];
         fullData += txData.result.vin[i].txinwitness[2] == "00" ? "" : txData.result.vin[i].txinwitness[2];
     }
-    
+
     return ok({type: 'success', string: fullData});
   });
 }
@@ -544,7 +544,7 @@ function GetObjectFromFullDataString(fullDataString)
 
 function ErrorPage(message = "Error!")
 {
-  return "<html><body><h2>"+message+"</h2></body></html>"  
+  return "<html><body><h2>"+message+"</h2></body></html>"
 }
 
 function GetDataFromObject(obj, network = "tBTC")
@@ -552,27 +552,27 @@ function GetDataFromObject(obj, network = "tBTC")
   return new Promise(async ok => {
     if (obj.type == 'error')
       return ok(ErrorPage());
-        
+
     if (obj.type == 'text')
       return ok(obj.base64);
-        
+
     if (obj.type == 'txs')
     {
       try {
         const txsArray = JSON.parse(Buffer.from(obj.base64, 'base64').toString('utf8'));
-        
+
         let fullData = "";
         for (let i=0; i<txsArray.length; i++)
         {
           const data = await GetDataFromTXID(txsArray[i], network);
           if (data.type == 'error')
             return ok(ErrorPage());
-            
+
           fullData += data.string;
         }
-        
+
         const objJSON = await GetObjectFromFullDataString(fullData);
-        
+
         return ok(await GetDataFromObject(objJSON, network));
       }
       catch(e) {
@@ -585,16 +585,16 @@ function GetDataFromObject(obj, network = "tBTC")
 exports.GetPageFromBlockchain = function(txid, network = "tBTC")
 {
   return new Promise(async ok => {
-    
+
     const data = await GetDataFromTXID(txid, network);
     if (data.type == 'error')
       return ok(ErrorPage());
-    
+
     const obj = await GetObjectFromFullDataString(data.string);
-    
+
     return ok(await GetDataFromObject(obj, network));
-    
+
   });
 
-  
+
 }

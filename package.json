@@ -9,7 +9,8 @@
   "dependencies": {
     "bip65": "latest",
     "bitcoinjs-lib": "latest",
-    "electron-navigation": "^1.5.8",
+    "electron": "^6.0.7",
+    "electron-navigation2": "^1.0.0",
     "jquery": "latest",
     "node-fetch": "latest",
     "util": "^0.12.1"
