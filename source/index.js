@@ -7,7 +7,8 @@ const tools = require("./tools");
 const constructor = require("./constructor");
 const constants = require('./constants.js');
 const $ = require('jquery');
-const nav = require("./navigation.js")
+const nav = require("./navigation.js");
+// const p2p = require('./p2p.js')
 
 const shell = electron.shell;
 const clipboard = electron.clipboard;

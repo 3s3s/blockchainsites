@@ -2,6 +2,7 @@
 
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 const {app, BrowserWindow, dialog, ipcMain} = require('electron');
 
 const utils = require('./source/utils.js');
@@ -34,6 +35,12 @@ function createWindow() {
     window = null;
   });
 
+  window.once('close', saveBookmarks);
+}
+
+function saveBookmarks(event) {
+  event.preventDefault();
+  window.webContents.send('getJsonBookmarks');
 }
 
 //Start application
@@ -77,4 +84,18 @@ ipcMain.on('openForLoading', (event) => {
 ipcMain.on('getbalance', async (event) => {
   const balance = await utils.getbalance();
   event.sender.send('balance', balance.result);
+});
+
+//Load bookmarks
+ipcMain.on('page-loaded', () => {
+  fs.readFile('bookmarks.json', 'utf8', (err, data) => {
+    if(err) data = '{}';
+    window.webContents.send('oldBookmarks', JSON.parse(data));
+  });
+});
+
+ipcMain.on('JsonBookmarks', (event, newBookmarks) => {
+  fs.writeFile("bookmarks.json", newBookmarks, () => {
+    window.close();
+  });
 });

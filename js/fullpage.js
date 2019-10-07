@@ -12,13 +12,13 @@ const slideMove = function(anchorLink, index, slideAnchor, slideIndex) {
       $('#itemConstructor').addClass('active');
       ipcRender.send('getbalance');
       break;
+    // case 2:
+    //   $('#itemSearch').addClass('active');
+    //   break;
     case 2:
-      $('#itemSearch').addClass('active');
-      break;
-    case 3:
       $('#itemTools').addClass('active');
       break;
-    case 4:
+    case 3:
       $('#itemBrowser').addClass('active');
       break;
   }

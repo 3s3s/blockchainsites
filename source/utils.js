@@ -598,3 +598,13 @@ exports.GetPageFromBlockchain = function(txid, network = "tBTC")
 
 
 }
+
+exports.isFullNode = async function()
+{
+  try {
+    const ret = await exports.commandLine('getblockchaininfo');
+    return !(ret.result.pruned);
+  } catch (e) {
+    return false;
+  }
+}

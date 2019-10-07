@@ -10,9 +10,10 @@
     "bip65": "latest",
     "bitcoinjs-lib": "latest",
     "electron": "^6.0.7",
-    "electron-navigation2": "^1.0.0",
+    "electron-navigation2": "^1.0.2",
     "jquery": "latest",
     "node-fetch": "latest",
+    "socket.io": "^2.3.0",
     "util": "^0.12.1"
   },
   "bugs": {
