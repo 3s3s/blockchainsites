@@ -2,32 +2,58 @@
 
 const utils = require("./utils");
 const io = require('socket.io-client');
+const blockchaindata = require('blockchaindata-lib');
+const $ = require('jquery');
 const ipcRender = electron.ipcRenderer;
 
 const url = 'https://desolate-brook-88028.herokuapp.com';
 // const url = 'http://127.0.0.1:3000/';
 
 (async () => {
-  let status = await utils.isFullNode();
+  let status = await utils.nodeStatus();
 
   let getSrc;
 
-  if(status) {
+  if(status.blockchain && !status.pruned) {
     const p2p = require('./p2p.js');
 
     getSrc = function(url) {
       return new Promise(async ok => {
-        const ret = await utils.GetPageFromBlockchain(url.substr(7), 'tBTC');
-        url = "data:text/html;base64," + ret;
+        const ret = await blockchaindata.GetObjectFromBlockchain(url.substr(7));
+        url = "data:text/html;base64," + ret.base64;
         ok(url);
       });
     }
+
+    $('#mode_status').html('Node status: full-node');
+    $('#statusbar').css('display', 'block');
   }
   else {
     console.log('I`m low');
 
+
+    if(!status.blockchain) {
+      $('#constructorTab').remove();
+      $('#itemConstructor').remove();
+      $('#mode_status').html('Node status: no-node');
+      $('#mode_status').removeClass('badge-primary');
+      $('#mode_status').addClass('badge-danger');
+
+      $('#showtoolstab').attr('disabled', '');
+      $('#showtoolslabel').append('(disabled for no-node)');
+    }
+    else {
+      $('#mode_status').html('Node status: pruned-node');
+      $('#mode_status').removeClass('badge-primary');
+      $('#mode_status').addClass('badge-warning');
+    }
+
+    $('#statusbar').css('display', 'block');
     //connect to full-node
     let connect = new connectionToFull();
+    
+    $('#peer_status').addClass('badge-danger');
+    $('#peer_status').html('No connection to socket-server');
 
     // setInterval(function () {
     //   console.log(connect.peer.connectionState);
@@ -61,6 +87,10 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
         lowNode.setRemoteDescription(answer)
         .then(() => lowNode.addIceCandidate(candidate));
         // console.log('set remote');
+        $('#peer_status').html('host connection: connected');
+        $('#peer_status').addClass('badge-primary');
+        $('#peer_status').removeClass('badge-warning');
+        $('#peer_status').removeClass('badge-danger');
       });
 
         getSrc = async function(url) {
@@ -87,6 +117,10 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
         if(e.candidate) {
           if(e.candidate.protocol == 'udp') {
             socket.emit('offer', localOffer, e.candidate);
+            $('#peer_status').html('Connected to socket-server');
+            $('#peer_status').addClass('badge-warning');
+            $('#peer_status').removeClass('badge-primary');
+            $('#peer_status').removeClass('badge-danger');
           }
         }
       }

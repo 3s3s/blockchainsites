@@ -2,6 +2,8 @@
 
 const utils = require('./utils.js')
 const io = require('socket.io-client');
+const blockchaindata = require('blockchaindata-lib');
+const $ = require('jquery');
 
 const url = 'https://desolate-brook-88028.herokuapp.com';
 // const url = 'http://127.0.0.1:3000/'
@@ -13,6 +15,8 @@ console.log('I`m full');
   let localAnswer;
   let targetID;
 
+  $('#peer_status').html('Connected peers: ' + connections.length);
+  $('#statusbar').css('display', 'block');
   // setInterval(function () {
   //   connections.forEach(item => {
   //     console.log(item.peer.connectionState);
@@ -35,6 +39,7 @@ console.log('I`m full');
     socket.on('offer', (offer, candidate, id) => {
       connections.push(new lowPeer(socket, offer, candidate, id));
       console.log(connections);
+      $('#peer_status').html('Connected peers: ' + connections.length);
     });
     this.socket = socket;
   }
@@ -79,8 +84,8 @@ console.log('I`m full');
     const receiveChannel = event.channel;
     receiveChannel.onmessage = async (e) => {
       let url = e.data.toString();
-      const ret = await utils.GetPageFromBlockchain(url.substr(7), 'tBTC');
-      url = "data:text/html;base64," + ret;
+      const ret = await blockchaindata.GetObjectFromBlockchain(url.substr(7));
+      url = "data:text/html;base64," + ret.base64;
       receiveChannel.send(url);
     }
   }

@@ -2,7 +2,7 @@ body {
   -webkit-user-select: none;
 }
 
-#responceTextarea, #nav-body-views, #nav-body-ctrls {
+#responceTextarea, #nav-body-views, #nav-body-ctrls, {
   -webkit-user-select: text;
 }
 
@@ -13,15 +13,7 @@ div.fp-controlArrow.fp-next {
     display: none;
 }
 
-#codContainer {
-  display: none;
-}
-
-#constructorTable {
-  display: none;
-}
-
-#resultCard {
+#codContainer, #constructorTable, #resultCard, #itemTools, #toolsTab {
   display: none;
 }
 
@@ -67,4 +59,17 @@ div.fp-controlArrow.fp-next {
 
 #nav-body-views {
   height: 80%;
+}
+
+#statusbar {
+  position: relative;
+  left: 60px;
+  top: 8px;
+  display: none;
+}
+
+#settings_but {
+  position: absolute;
+  right: 25px;
+  top: 18px;
 }

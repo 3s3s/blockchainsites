@@ -599,12 +599,20 @@ exports.GetPageFromBlockchain = function(txid, network = "tBTC")
 
 }
 
-exports.isFullNode = async function()
+exports.nodeStatus = function()
 {
-  try {
-    const ret = await exports.commandLine('getblockchaininfo');
-    return !(ret.result.pruned);
-  } catch (e) {
-    return false;
-  }
+  return new Promise(async ok => {
+    try {
+      const ret = await exports.commandLine('getblockchaininfo');
+      ok({
+        blockchain: true,
+        pruned: ret.result.pruned
+      });
+    } catch (e) {
+      ok({
+        blockchain: false,
+        pruned: undefined
+      });
+    }
+  });
 }

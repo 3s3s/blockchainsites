@@ -9,17 +9,17 @@ const slideMove = function(anchorLink, index, slideAnchor, slideIndex) {
       ipcRender.send('getbalance');
       break;
     case 1:
-      $('#itemConstructor').addClass('active');
-      ipcRender.send('getbalance');
+      $('#itemBrowser').addClass('active');
       break;
     // case 2:
     //   $('#itemSearch').addClass('active');
     //   break;
     case 2:
-      $('#itemTools').addClass('active');
+      $('#itemConstructor').addClass('active');
+      ipcRender.send('getbalance');
       break;
     case 3:
-      $('#itemBrowser').addClass('active');
+      $('#itemTools').addClass('active');
       break;
   }
 }
@@ -32,11 +32,22 @@ const loadPage = function() {
 $(document).ready(function() {
   // browser.newTab('http://github.com/');
 
+  if (navigator.onLine) {
+    $('#internet_status').append('connected');
+    $('#internet_status').addClass('badge-success');
+  }
+  else {
+    $('#internet_status').append('disconnected');
+    $('#internet_status').addClass('badge-danger');
+  }
+
   $('#fullpage').fullpage({
     scrollingSpeed: 500,
     anchors: ["first", "second", "third"],
     verticalCentered: false,
     scrollOverflow: true,
+    keyboardScrolling: false,
+    controlArrows: false,
     scrollOverflowOptions: {preventDefault:false},
     afterSlideLoad: slideMove,
     afterLoad: loadPage

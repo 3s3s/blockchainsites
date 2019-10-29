@@ -3,6 +3,7 @@
 // const {ipcRender} = electron;
 const ipcRender = electron.ipcRenderer;
 const utils = require('./utils.js');
+const blockchaindata = require('blockchaindata-lib');
 
 $(document).ready(function() {
 
@@ -82,7 +83,7 @@ $(document).ready(function() {
 
   //Sending rawTx with data (page) to BlockChain
   ipcRender.on('loadReply', async (event, html) => {
-    const ret = await utils.SaveTextToBlockchain(html);
+    const ret = await blockchaindata.SaveTextToBlockchain(html);
 
     if (ret.result == true)
       alert('saved! txid='+ret.txid);

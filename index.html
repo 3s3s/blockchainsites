@@ -59,7 +59,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
       <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" width="35" height="35" alt="" id="img">
-      Bitcoin Sites</a>
+      Bitcoin Sites
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -69,17 +70,29 @@
         <li class="nav-item" id="itemInfo">
           <a class="nav-link" href="#first">Info<span class="sr-only"></span></a>
         </li>
-        <li class="nav-item" id="itemConstructor">
-          <a class="nav-link" href="#first/1">Constructor<span class="sr-only"></span></a>
+        <li class="nav-item" id="itemBrowser">
+          <a id="browserLink" class="nav-link" href="#first/1">Browser</a>
         </li>
         <!-- <li class="nav-item" id="itemSearch">
           <a class="nav-link" href="#first/2">Search engine</a>
         </li> -->
-        <li class="nav-item" id="itemTools">
-          <a class="nav-link" href="#first/2">Tools</a>
+        <li class="nav-item" id="itemConstructor">
+          <a class="nav-link" href="#first/2">Constructor</a>
         </li>
-        <li class="nav-item" id="itemBrowser">
-          <a class="nav-link" href="#first/3">Browser</a>
+        <li class="nav-item" id="itemTools">
+          <a id="toolsLink" class="nav-link" href="#first/3">Tools<span class="sr-only"></span></a>
+        </li>
+        <li>
+          <div id="statusbar">
+            <span id="internet_status" class="badge">Internet state: </span>
+            <span id="mode_status" class="badge badge-primary"></span>
+            <span id="peer_status" class="badge badge-primary"></span>
+          </div>
+        </li>
+        <li id="settings_but">
+          <span class="badge badge-primary" data-toggle="modal" data-target="#settings">
+            <img width="20px" height="20px" src="https://img.icons8.com/ios-filled/64/000000/settings.png">
+          </span>
         </li>
       </ul>
     </div>
@@ -87,7 +100,7 @@
 
     <div id="fullpage">
       <div class="section">
-        <div class="slide active">
+        <div class="slide active" id="infoTab">
           <div class="jumbotron">
             <p class="lead">This is an application for creating and searching sites</p>
               <hr class="my-4">
@@ -127,20 +140,21 @@
                   </p>
                   <button class="btn btn-primary copyAddress">Copy address</button>
                   <br><br>
-                  <!-- <p>
-                    Next step you have to copy transaction id and paste it to the input field below
-                  </p>
-                  <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="transaction id">
-                    <div class="input-group-append">
-                      <button class="btn btn-primary" type="submit" id="faucetTx">OK</button>
-                    </div>
-                  </div> -->
                 </div>
               </div>
           </div>
+          <div class="emptydiv forstatus">
+
+          </div>
         </div>
         <div class="slide">
+          <div id="searchBar">
+            <div id="nav-body-ctrls"></div>
+            <div id="nav-body-tabs"></div>
+            <div id="nav-body-views"></div>
+          </div>
+        </div>
+        <div class="slide" id="constructorTab">
           <div class="jumbotron">
             <p class="lead">This is a simple constructor for creating your own web-page</p>
               <hr class="my-4">
@@ -197,7 +211,7 @@
               </div>
           </div> -->
         <!-- </div> -->
-        <div class="slide">
+        <div class="slide" id="toolsTab">
           <div class="jumbotron">
             <p class="lead">With the Tools you can send RPC-requests to net of the bitcoin test</p>
               <hr class="my-4">
@@ -239,16 +253,13 @@
                 </div>
               </div>
           </div>
-        </div>
-        <div class="slide">
-          <div id="searchBar">
-            <div id="nav-body-ctrls"></div>
-            <div id="nav-body-tabs"></div>
-            <div id="nav-body-views"></div>
+          <div class="emptydiv forstatus">
+
           </div>
         </div>
-      </div>
     </div>
+  </div>
+</body>
 
     <!-- modal -->
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -275,7 +286,41 @@
       </div>
     </div>
 
-  </body>
+    <!-- settings -->
+    <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsTitle">Settings</h5>
+        </div>
+        <div class="modal-body">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="showtoolstab">
+            <label id="showtoolslabel" class="custom-control-label" for="showtoolstab">Show tools tab </label>
+          </div>
+          <hr>
+          <h4>Client mode</h4>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="customRadioInline1" name="customRadioInline1" class="custom-control-input">
+            <label class="custom-control-label" for="customRadioInline1">Full node</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input">
+            <label class="custom-control-label" for="customRadioInline2">Pruned node</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="customRadioInline3" name="customRadioInline1" class="custom-control-input">
+            <label class="custom-control-label" for="customRadioInline3">No node</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="settingsSave">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/index.js"></script>
   <script type="text/javascript" src="js/fullpage.js"></script>
 </html>
