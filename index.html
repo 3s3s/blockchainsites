@@ -211,52 +211,49 @@
               </div>
           </div> -->
         <!-- </div> -->
-        <div class="slide" id="toolsTab">
-          <div class="jumbotron">
-            <p class="lead">With the Tools you can send RPC-requests to net of the bitcoin test</p>
-              <hr class="my-4">
-            <p>For successful work it's necessary that the client of bitcoin is running</p>
-          </div>
+      <div class="slide" id="toolsTab">
+        <div class="jumbotron">
+          <p class="lead">With the Tools you can send RPC-requests to net of the bitcoin test</p>
+            <hr class="my-4">
+          <p>For successful work it's necessary that the client of bitcoin is running</p>
+        </div>
 
 
-          <div class='container'>
-              <div class='row'>
-                  <div class='col md-12'>
-                      <h2>Command Line</h2>
-                  </div>
-              </div>
-              <div class='row'>
+        <div class='container'>
+            <div class='row'>
                 <div class='col md-12'>
-                  <form id="formRPC">
+                    <h2>Command Line</h2>
+                </div>
+            </div>
+            <div class='row'>
+              <div class='col md-12'>
+                <form id="formRPC">
 
-                    <div class="input-group mb-3">
-                      <input type="text" class="form-control" id="rpcCommand" placeholder="getwalletinfo" aria-label="command" aria-describedby="button-addon2">
-                      <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">send</button>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="rpcCommand" placeholder="getwalletinfo" aria-label="command" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="submit" id="button-addon2">send</button>
+                    </div>
+                  </div>
+
+                  <br><br>
+
+                    <div class="card" id="resultCard">
+                      <div class="card-body">
+                        <h5 class="card-title" id="resultTitle"></h5>
+                        <pre>
+                          <p class="card-text" id="responceTextarea">
+
+                          </p>
+                        </pre>
                       </div>
                     </div>
 
-                    <br><br>
-
-                      <div class="card" id="resultCard">
-                        <div class="card-body">
-                          <h5 class="card-title" id="resultTitle"></h5>
-                          <pre>
-                            <p class="card-text" id="responceTextarea">
-
-                            </p>
-                          </pre>
-                        </div>
-                      </div>
-
-                  </form>
-                </div>
+                </form>
               </div>
-          </div>
-          <div class="emptydiv forstatus">
-
-          </div>
+            </div>
         </div>
+      </div>
     </div>
   </div>
 </body>

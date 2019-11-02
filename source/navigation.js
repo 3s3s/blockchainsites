@@ -6,7 +6,8 @@ const blockchaindata = require('blockchaindata-lib');
 const $ = require('jquery');
 const ipcRender = electron.ipcRenderer;
 
-const url = 'https://desolate-brook-88028.herokuapp.com';
+// const url = 'https://desolate-brook-88028.herokuapp.com';
+const url = 'http://144.76.71.116:3000/';
 // const url = 'http://127.0.0.1:3000/';
 
 (async () => {
@@ -51,7 +52,7 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
     $('#statusbar').css('display', 'block');
     //connect to full-node
     let connect = new connectionToFull();
-    
+
     $('#peer_status').addClass('badge-danger');
     $('#peer_status').html('No connection to socket-server');
 
@@ -63,8 +64,13 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
     function connectionToFull() {
 
       const socket = io.connect(url, {
-        reconnect: true
+        reconnect: false
       });
+
+      //connection state logs
+      const timer = setInterval(function () {
+        console.log('connect to server: ' + socket.connected);
+      }, 2000);
 
       const lowNode = new RTCPeerConnection();
       this.peer = lowNode;
@@ -84,9 +90,12 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
       });
 
       socket.on('answer', (answer, candidate) => {
+        console.log('answer is received');
         lowNode.setRemoteDescription(answer)
         .then(() => lowNode.addIceCandidate(candidate));
         // console.log('set remote');
+        socket.disconnect();
+        clearInterval(timer);
         $('#peer_status').html('host connection: connected');
         $('#peer_status').addClass('badge-primary');
         $('#peer_status').removeClass('badge-warning');
@@ -104,7 +113,21 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
         });
       }
 
+      let state = false;
       function connectionState() {
+        console.log(lowNode.connectionState);
+        if (lowNode.connectionState == 'connecting') {
+          setTimeout(function () {
+            if (!state) {
+              socket.disconnect();
+              lowNode.close();
+              connect = new connectionToFull();
+            }
+          }, 3000);
+        }
+        if (lowNode.connectionState == 'connected') {
+          state = true;
+        }
         if(lowNode.connectionState == 'closed' || lowNode.connectionState == 'disconnected' || lowNode.connectionState == 'failed') {
           connect.peer.close();
           connect = new connectionToFull();
@@ -112,18 +135,48 @@ const url = 'https://desolate-brook-88028.herokuapp.com';
         }
       }
 
+      let offerSent = 0;
+      let candidate;
+      let complete = false;
+
       function iceCandidate(e) {
-        // console.log(e.candidate);
         if(e.candidate) {
           if(e.candidate.protocol == 'udp') {
-            socket.emit('offer', localOffer, e.candidate);
-            $('#peer_status').html('Connected to socket-server');
-            $('#peer_status').addClass('badge-warning');
-            $('#peer_status').removeClass('badge-primary');
-            $('#peer_status').removeClass('badge-danger');
+            candidate = e.candidate;
+            offerSent++
+            setTimeout(() => {
+              if (offerSent == 1 && !complete) {
+                socket.emit('offer', localOffer, candidate);
+                console.log('offer has been sent');
+                complete = true;
+              }
+              else if (offerSent == 2 && !complete) {
+                socket.emit('offer', localOffer, candidate);
+                console.log('offer has been sent');
+                complete = true;
+              }
+              $('#peer_status').html('Connected to socket-server');
+              $('#peer_status').addClass('badge-warning');
+              $('#peer_status').removeClass('badge-primary');
+              $('#peer_status').removeClass('badge-danger');
+            }, 300);
           }
         }
       }
+
+      //reconnecting to server
+      socket.on('disconnect', () => {
+        socket.disconnect();
+        setTimeout(function () {
+          if(lowNode.connectionState != 'connected') {
+            lowNode.close();
+            connect = new connectionToFull();
+            browser.getSrc = getSrc;
+            console.log('reconnect');
+            clearInterval(timer);
+          }
+        }, 3000);
+      });
 
     }
   }
