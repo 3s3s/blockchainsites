@@ -77,19 +77,19 @@ console.log('I`m full');
         {url:'stun:stun1.l.google.com:19302'},
         {url:'stun:stun2.l.google.com:19302'},
         {url:'stun:stun3.l.google.com:19302'},
-        {url:'stun:stun4.l.google.com:19302'},
-        {url:'stun:stun.ekiga.net'},
-        {url:'stun:stun.ideasip.com'},
-        {url:'stun:stun.schlund.de'},
-        {url:'stun:stun.voiparound.com'},
-        {url:'stun:stun.voipbuster.com'},
-        {url:'stun:stun.voipstunt.com'},
-        {url:'stun:stun.xten.com'},
-        {
-          url: 'turn:numb.viagenie.ca',
-          credential: 'muazkh',
-          username: 'webrtc@live.com'
-        }
+        {url:'stun:stun4.l.google.com:19302'}
+        // {url:'stun:stun.ekiga.net'},
+        // {url:'stun:stun.ideasip.com'},
+        // {url:'stun:stun.schlund.de'},
+        // {url:'stun:stun.voiparound.com'},
+        // {url:'stun:stun.voipbuster.com'},
+        // {url:'stun:stun.voipstunt.com'},
+        // {url:'stun:stun.xten.com'},
+        // {
+        //   url: 'turn:numb.viagenie.ca',
+        //   credential: 'muazkh',
+        //   username: 'webrtc@live.com'
+        // }
     	]
     }
 
@@ -121,9 +121,14 @@ console.log('I`m full');
     .then(() => fullNode.createAnswer())
     .then(answer => fullNode.setLocalDescription(answer))
     .then(() => {
-      candidate.ice.forEach(item => {
-        fullNode.addIceCandidate(item);
-      });
+
+      setTimeout(function () {
+        console.log('add ice');
+        candidate.ice.forEach(item => {
+          fullNode.addIceCandidate(item);
+        });
+      }, 3000);
+
       localAnswer = fullNode.localDescription;
       targetID = id;
     });

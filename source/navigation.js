@@ -78,19 +78,19 @@ const url = 'http://144.76.71.116:3000/';
           {url:'stun:stun1.l.google.com:19302'},
           {url:'stun:stun2.l.google.com:19302'},
           {url:'stun:stun3.l.google.com:19302'},
-          {url:'stun:stun4.l.google.com:19302'},
-          {url:'stun:stun.ekiga.net'},
-          {url:'stun:stun.ideasip.com'},
-          {url:'stun:stun.schlund.de'},
-          {url:'stun:stun.voiparound.com'},
-          {url:'stun:stun.voipbuster.com'},
-          {url:'stun:stun.voipstunt.com'},
-          {url:'stun:stun.xten.com'},
-          {
-            url: 'turn:numb.viagenie.ca',
-            credential: 'muazkh',
-            username: 'webrtc@live.com'
-          }
+          {url:'stun:stun4.l.google.com:19302'}
+          // {url:'stun:stun.ekiga.net'},
+          // {url:'stun:stun.ideasip.com'},
+          // {url:'stun:stun.schlund.de'},
+          // {url:'stun:stun.voiparound.com'},
+          // {url:'stun:stun.voipbuster.com'},
+          // {url:'stun:stun.voipstunt.com'},
+          // {url:'stun:stun.xten.com'},
+          // {
+          //   url: 'turn:numb.viagenie.ca',
+          //   credential: 'muazkh',
+          //   username: 'webrtc@live.com'
+          // }
       	]
       }
 
@@ -115,9 +115,15 @@ const url = 'http://144.76.71.116:3000/';
         console.log('answer is received');
         lowNode.setRemoteDescription(answer)
         .then(() => {
-          candidate.ice.forEach(item => {
-            lowNode.addIceCandidate(item)
-          })
+
+          setTimeout(() => {
+            console.log('add ice');
+            candidate.ice.forEach(item => {
+              lowNode.addIceCandidate(item)
+            })
+
+          }, 3000);
+
         });
 
         socket.disconnect();
@@ -142,15 +148,15 @@ const url = 'http://144.76.71.116:3000/';
       let state = false;
       function connectionState() {
         console.log(lowNode.connectionState);
-        if (lowNode.connectionState == 'connecting') {
-          setTimeout(function () {
-            if (!state) {
-              socket.disconnect();
-              lowNode.close();
-              connect = new connectionToFull();
-            }
-          }, 4000);
-        }
+        // if (lowNode.connectionState == 'connecting') {
+        //   setTimeout(function () {
+        //     if (!state) {
+        //       socket.disconnect();
+        //       lowNode.close();
+        //       connect = new connectionToFull();
+        //     }
+        //   }, 4000);
+        // }
         if (lowNode.connectionState == 'connected') {
           state = true;
         }
@@ -191,7 +197,7 @@ const url = 'http://144.76.71.116:3000/';
             console.log('reconnect');
             clearInterval(timer);
           }
-        }, 3000);
+        }, 20000);
       });
 
     }
