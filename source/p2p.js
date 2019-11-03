@@ -70,26 +70,49 @@ console.log('I`m full');
 
   //p2p constructor
   function lowPeer(socket, offer, candidate, id) {
-    const fullNode = new RTCPeerConnection();
+
+    const iceServers = {
+    	iceServers: [
+        {url:'stun:stun.l.google.com:19302'},
+        {url:'stun:stun1.l.google.com:19302'},
+        {url:'stun:stun2.l.google.com:19302'},
+        {url:'stun:stun3.l.google.com:19302'},
+        {url:'stun:stun4.l.google.com:19302'},
+        {url:'stun:stun.ekiga.net'},
+        {url:'stun:stun.ideasip.com'},
+        {url:'stun:stun.schlund.de'},
+        {url:'stun:stun.voiparound.com'},
+        {url:'stun:stun.voipbuster.com'},
+        {url:'stun:stun.voipstunt.com'},
+        {url:'stun:stun.xten.com'},
+        {
+          url: 'turn:numb.viagenie.ca',
+          credential: 'muazkh',
+          username: 'webrtc@live.com'
+        }
+    	]
+    }
+
+    const fullNode = new RTCPeerConnection(iceServers);
 
     //callback function
     fullNode.ondatachannel = dataChannel;
     fullNode.onconnectionstatechange  = connectionState;
-    fullNode.onicecandidate = function(e) {
-      // console.log(e.candidate);
-      if (e.candidate) {
-        console.log(e.candidate.protocol);
-        if (e.candidate.protocol == 'udp') {
-          // console.log('emit answer  to ' + targetID);
-          socket.emit('answer', localAnswer, e.candidate, targetID);
-          console.log('answer has been sent');
 
-          //disconnect socket-server
-          if(connections.length > (MAX_PEER_CONNECTIONS - 1)) {
-            socket.removeAllListeners();
-            socket.disconnect();
-            connectStatus = false;
-          }
+    let candidates = {
+      ice: []
+    }
+
+    fullNode.onicecandidate = function(e) {
+      if (e.candidate) {
+        console.log('get candidate');
+        candidates.ice.push(e.candidate);
+        socket.emit('answer', localAnswer, candidates, targetID);
+        console.log('answer and candidates have sent');
+        if(connections.length > (MAX_PEER_CONNECTIONS - 1)) {
+          socket.removeAllListeners();
+          socket.disconnect();
+          connectStatus = false;
         }
       }
     }
@@ -98,7 +121,9 @@ console.log('I`m full');
     .then(() => fullNode.createAnswer())
     .then(answer => fullNode.setLocalDescription(answer))
     .then(() => {
-      fullNode.addIceCandidate(candidate)
+      candidate.ice.forEach(item => {
+        fullNode.addIceCandidate(item);
+      });
       localAnswer = fullNode.localDescription;
       targetID = id;
     });

@@ -72,7 +72,29 @@ const url = 'http://144.76.71.116:3000/';
         console.log('connect to server: ' + socket.connected);
       }, 2000);
 
-      const lowNode = new RTCPeerConnection();
+      const iceServers = {
+      	iceServers: [
+          {url:'stun:stun.l.google.com:19302'},
+          {url:'stun:stun1.l.google.com:19302'},
+          {url:'stun:stun2.l.google.com:19302'},
+          {url:'stun:stun3.l.google.com:19302'},
+          {url:'stun:stun4.l.google.com:19302'},
+          {url:'stun:stun.ekiga.net'},
+          {url:'stun:stun.ideasip.com'},
+          {url:'stun:stun.schlund.de'},
+          {url:'stun:stun.voiparound.com'},
+          {url:'stun:stun.voipbuster.com'},
+          {url:'stun:stun.voipstunt.com'},
+          {url:'stun:stun.xten.com'},
+          {
+            url: 'turn:numb.viagenie.ca',
+            credential: 'muazkh',
+            username: 'webrtc@live.com'
+          }
+      	]
+      }
+
+      const lowNode = new RTCPeerConnection(iceServers);
       this.peer = lowNode;
       const sendChannel = lowNode.createDataChannel('sendChannel');
 
@@ -92,8 +114,12 @@ const url = 'http://144.76.71.116:3000/';
       socket.on('answer', (answer, candidate) => {
         console.log('answer is received');
         lowNode.setRemoteDescription(answer)
-        .then(() => lowNode.addIceCandidate(candidate));
-        // console.log('set remote');
+        .then(() => {
+          candidate.ice.forEach(item => {
+            lowNode.addIceCandidate(item)
+          })
+        });
+
         socket.disconnect();
         clearInterval(timer);
         $('#peer_status').html('host connection: connected');
@@ -123,7 +149,7 @@ const url = 'http://144.76.71.116:3000/';
               lowNode.close();
               connect = new connectionToFull();
             }
-          }, 3000);
+          }, 4000);
         }
         if (lowNode.connectionState == 'connected') {
           state = true;
@@ -135,32 +161,22 @@ const url = 'http://144.76.71.116:3000/';
         }
       }
 
-      let offerSent = 0;
-      let candidate;
-      let complete = false;
+      let candidates = {
+        ice: []
+      }
 
       function iceCandidate(e) {
         if(e.candidate) {
-          if(e.candidate.protocol == 'udp') {
-            candidate = e.candidate;
-            offerSent++
-            setTimeout(() => {
-              if (offerSent == 1 && !complete) {
-                socket.emit('offer', localOffer, candidate);
-                console.log('offer has been sent');
-                complete = true;
-              }
-              else if (offerSent == 2 && !complete) {
-                socket.emit('offer', localOffer, candidate);
-                console.log('offer has been sent');
-                complete = true;
-              }
-              $('#peer_status').html('Connected to socket-server');
-              $('#peer_status').addClass('badge-warning');
-              $('#peer_status').removeClass('badge-primary');
-              $('#peer_status').removeClass('badge-danger');
-            }, 300);
-          }
+          console.log('get candidate');
+          candidates.ice.push(e.candidate);
+          $('#peer_status').html('Connected to socket-server');
+          $('#peer_status').addClass('badge-warning');
+          $('#peer_status').removeClass('badge-primary');
+          $('#peer_status').removeClass('badge-danger');
+        }
+        else {
+          socket.emit('offer', localOffer, candidates);
+          console.log('offer and candidates have sent');
         }
       }
 
