@@ -31,6 +31,8 @@ function createWindow() {
 
   window.webContents.openDevTools();   //after debugging
 
+  // window.setMenu(null);
+
   window.on('closed', () => {
     window = null;
   });
@@ -71,13 +73,25 @@ ipcMain.on('saveBtn', (event, page) => {
 });
 
 //Read html from file to load
-ipcMain.on('openForLoading', (event) => {
-
-  dialog.showOpenDialog(constants.ipcSave, async (filePath) => {
-    const html = await utils.openHTML(filePath[0]);
-    event.sender.send('loadReply', html);
-  })
-
+ipcMain.on('dataTx', (event, txid) => {
+  fs.readFile('pageTx.json', 'utf8', (err, data) => {
+    if(err) {
+      data = {
+        txArr: []
+      };
+    }
+    else {
+      data = JSON.parse(data);
+    }
+    data.txArr.push(txid);
+    event.sender.send('txArr', data.txArr);
+    data = JSON.stringify(data);
+    fs.writeFile("pageTx.json", data, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
 });
 
 //Available memory
@@ -91,6 +105,17 @@ ipcMain.on('page-loaded', () => {
   fs.readFile('bookmarks.json', 'utf8', (err, data) => {
     if(err) data = '{}';
     window.webContents.send('oldBookmarks', JSON.parse(data));
+  });
+  fs.readFile('pageTx.json', 'utf8', (err, data) => {
+    if(err) {
+      data = {
+        txArr: []
+      };
+    }
+    else {
+      data = JSON.parse(data);
+    }
+    window.webContents.send('txArr', data.txArr);
   });
 });
 

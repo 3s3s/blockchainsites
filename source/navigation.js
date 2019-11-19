@@ -154,6 +154,9 @@ const url = 'http://144.76.71.116:3000/';
 
   $(document).ready(function() {
     ipcRender.send('page-loaded');
+    $('#spinner').css('display', 'none');;
+    $('#fullpage').css('display', 'block');;
+    $('.navbar').css('display', 'block');;
   });
 
   ipcRender.on('oldBookmarks', (event, oldBookmarks) => {

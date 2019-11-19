@@ -76,26 +76,23 @@ $(document).ready(function() {
   });
 
   //Button for loading the page to Blockchain
-  $('#loadBtn').click((e) => {
+  $('#loadBtn').click(async (e) => {
     e.preventDefault();
-    ipcRender.send('openForLoading');
+    const pageData = $('#codeeditor').summernote('code');
+    if(pageData) {
+      const ret = await blockchaindata.SaveTextToBlockchain(pageData);
+      if (ret.result) {
+        console.log(ret.txid);
+        ipcRender.send('dataTx', ret.txid);
+      }
+    }
   });
+});
 
-  //Sending rawTx with data (page) to BlockChain
-  ipcRender.on('loadReply', async (event, html) => {
-    const ret = await blockchaindata.SaveTextToBlockchain(html);
-
-    if (ret.result == true)
-      alert('saved! txid='+ret.txid);
-    else
-      alert(ret.message);
-    //const trimHTML = await utils.trimHTML(html);
-    //code for saving data
-    // const rawTx = await utils.txBuild(trimHTML, privateKey, input, nOut); // Set privateKey, input and nOut
-    // const txWithPage = await utils.broadcast(rawTx);
-    // const unspentTX = await utils.joinOutputs(txWithPage.result);
-    //console.log(trimHTML); //debugging
+ipcRender.on('txArr', (event, txArr) => {
+  $('#mySitesCount').html(txArr.length);
+  $('#pageTx').html('');
+  txArr.forEach(item => {
+    $('#pageTx').prepend(`<li class="list-group-item">tbtc://${item}</li>`);
   });
-
-
 });

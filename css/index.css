@@ -2,7 +2,7 @@ body {
   -webkit-user-select: none;
 }
 
-#responceTextarea, #nav-body-views, #nav-body-ctrls {
+#responceTextarea, #nav-body-views, #nav-body-ctrls, #scrolldiv {
   -webkit-user-select: text;
 }
 
@@ -72,4 +72,20 @@ div.fp-controlArrow.fp-next {
   position: absolute;
   right: 25px;
   top: 18px;
+}
+
+#scrolldiv {
+  height: 150px;
+  width: 740px;
+  overflow: scroll;
+}
+
+#fullpage, .navbar.navbar-expand-lg.navbar-dark.bg-dark {
+  display: none;
+}
+
+#spinner {
+  position: absolute;
+  left: 13%;
+  top: 30%;
 }

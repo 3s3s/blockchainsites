@@ -56,6 +56,7 @@
 
   </head>
   <body>
+    <img src="./source/img/loading_spinner.gif" id="spinner">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
       <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" width="35" height="35" alt="" id="img">
@@ -138,13 +139,23 @@
                   <p>
                     On that site in the input field you must paste your personal address to recieve BTC
                   </p>
-                  <button class="btn btn-primary copyAddress">Copy address</button>
+                  <button class="btn btn-primary copyAddress">
+                    Copy address
+                  </button>
+                  <button class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapse_target">
+                    Show my sites
+                  </button>
                   <br><br>
                 </div>
               </div>
           </div>
-          <div class="emptydiv forstatus">
-
+          <div class="container">
+            <div class="collapse" id="collapse_target">
+              <div class="card card-body" id="scrolldiv">
+                <ul class="list-group list-group-flush" id="pageTx">
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="slide">
@@ -190,7 +201,7 @@
 
               </div>
               <br>
-              <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
+              <button type="button" class="btn btn-primary" id="saveBtn">Save html local</button>
               <button type="button" class="btn btn-primary openBtn">Open file</button>
               <button type="button" class="btn btn-success" id="loadBtn">Load page to BlockChain</button>
           </div>

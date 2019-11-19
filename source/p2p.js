@@ -51,7 +51,7 @@ console.log('I`m full');
     socket.on('disconnect', () => {
       if(connections.length < MAX_PEER_CONNECTIONS) {
         console.log('reconnect');
-        socket.disconnect();
+        server.socket.disconnect();
         server = serverConnect();
       }
     });
